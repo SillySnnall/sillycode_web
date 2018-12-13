@@ -1,5 +1,8 @@
 <template>
-  <Row type="flex" justify="center" style="margin-bottom: 40px;">
+  <Row type="flex" justify="center">
+    <Col span="24">
+      <Header/>
+    </Col>
     <Col span="14">
       <!-- 标题图片 -->
       <Upload
@@ -60,19 +63,23 @@
         <div ref="editor"></div>
       </Col>
     </Col>
+    <Col span="24">
+      <Footer/>
+    </Col>
   </Row>
 </template>
 
 <script>
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 import { get, post } from "../util";
-
 import config from "../config";
-
 import E from "wangeditor";
-
 export default {
-  name: "",
-  props: [""],
+  components: {
+    Header,
+    Footer
+  },
   data() {
     return {
       uploadImgUrl: config.host + "/upload_img",
@@ -88,10 +95,6 @@ export default {
       contentValue: "" // 文章内容
     };
   },
-
-  components: {},
-
-  computed: {},
 
   created() {
     this.getTypeOnline();
@@ -151,11 +154,9 @@ export default {
         userId: "000000"
       });
       if (data.code === 0) {
+        sessionStorage.setItem("bolgId", data.data.bolgId);
         this.$router.push({
-          name: "bolgdetail",
-          query: {
-            bolgId: data.data.bolgId
-          }
+          name: "bolgdetail"
         });
       } else {
         this.$Message.error(data.data);

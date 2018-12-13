@@ -1,5 +1,8 @@
 <template>
   <Row type="flex" justify="center">
+    <Col span="24">
+      <Header/>
+    </Col>
     <Col
       span="24"
       :style="{background:'transparent url(' + headerImg + ') no-repeat center', height: '500px', backgroundSize: 'cover'}"
@@ -7,16 +10,23 @@
     <Col span="24">
       <BolgItem v-for="(item,key) in BolgList" :value="item" :key="key"/>
     </Col>
+    <Col span="24">
+      <Footer/>
+    </Col>
   </Row>
 </template>
 
 <script>
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 import BolgItem from "../components/BolgItem.vue";
 import { get, post } from "../util";
+let event = require("../eventbus/event.js");
 export default {
-  name: "app",
   components: {
-    BolgItem
+    BolgItem,
+    Header,
+    Footer
   },
   data() {
     return {
@@ -26,14 +36,19 @@ export default {
   },
   created() {
     this.bolgListOnline();
+    event.on(event.HEADER_BOLG, this, function(message) {
+      this.bolgListOnline();
+    });
+  },
+  destroyed() {
+    event.remove(event.HEADER_BOLG, this);
   },
   methods: {
     // 获取博客列表
     async bolgListOnline() {
-      console.log("type：", this.$route.query.type);
-      let type = this.$route.query.type;
+      let type = sessionStorage.getItem("type");
       if (!type) {
-        type = 7;
+        type = 0;
       }
       this.submittimg = true;
       let data = await post("/bolg_data", {
@@ -42,7 +57,7 @@ export default {
         type: type
       });
       if (data.code === 0) {
-        this.BolgList = data.data.content;
+        this.BolgList = data.data;
       } else {
         this.$Message.error(data.data);
       }

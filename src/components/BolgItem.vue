@@ -70,11 +70,9 @@ export default {
   },
   methods: {
     itemClick() {
+      sessionStorage.setItem("bolgId", this.value.bolgId);
       this.$router.push({
-        name: "bolgdetail",
-        query:{
-          bolgId: this.value.bolgId
-        }
+        name: "bolgdetail"
       });
     }
   }

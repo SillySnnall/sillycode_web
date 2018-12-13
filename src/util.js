@@ -2,6 +2,7 @@
 import config from './config'
 
 const axios = require('axios');
+const Qs = require('qs');
 
 // http get工具函数 获取数据
 export function get(url, data) {
@@ -16,7 +17,10 @@ function request(url, method, data) {
     axios({
       method: method,//请求方式
       url: config.host + url,//请求地址
-      data: data,// 请求数据
+      headers: {
+        "Content-Type": 'application/x-www-form-urlencoded; charset=UTF-8'
+      },
+      data: Qs.stringify(data),// 请求数据
     })
       .then(function (res) {
         resolve(res.data)

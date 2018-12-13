@@ -13,8 +13,11 @@
               <Dropdown @on-click="dropdownClick">
                 <a @click="bolgClick">博客</a>
                 <DropdownMenu slot="list" ref="menu">
-                  <a v-for="item in bolgTypeList" :key="item.type">
-                    <DropdownItem :name="item.type">{{item.typeName}}</DropdownItem>
+                  <a v-for="(item) in bolgTypeList" :key="item.type">
+                    <DropdownItem
+                      :name="item.type"
+                      style=" list-style: none; text-align: center; font-size: 14px !important; padding: 10px 0px;"
+                    >{{item.typeName}}</DropdownItem>
                   </a>
                 </DropdownMenu>
               </Dropdown>
@@ -37,11 +40,11 @@
 
 <script>
 import { get, post } from "../util";
+import config from "../config";
+let event = require("../eventbus/event.js");
 export default {
-  name: "app",
-  components: {},
   created() {
-    // this.getTypeOnline();
+    this.getTypeOnline();
   },
   data() {
     return {
@@ -50,24 +53,35 @@ export default {
     };
   },
   updated() {
-    // 重置菜单样式
-    let lis = this.$refs.menu.$children;
-    for (let index in lis) {
-      lis[index].$el.className = "menu-li";
-    }
+    this.resetMenuStyle();
   },
   methods: {
+    //重置菜单样式
+    resetMenuStyle() {
+      let lis = this.$refs.menu.$children;
+      for (let index in lis) {
+        lis[index].$el.className = "";
+      }
+      let menuStyle = this.$refs.menu.$parent.$el.style;
+      menuStyle.backgroundColor = "black";
+      menuStyle.margin = "23px 0";
+      menuStyle.borderRadius = "0px";
+      this.$refs.menu.$el.style.minWidth = "131px";
+    },
     // logo点击
     logoClick() {
-      this.$router.push({
-        name: "bolg"
-      });
+      window.location.href = "http://localhost:8080" + "/bolg";
     },
     // 博客点击
     bolgClick() {
-      this.$router.push({
-        name: "bolg"
-      });
+      sessionStorage.setItem("type", 0);
+      if (this.$router.history.current.name === "bolg") {
+        event.emit(event.HEADER_BOLG, "");
+      } else {
+        this.$router.push({
+          name: "bolg"
+        });
+      }
     },
     // 新闻点击
     newsClick() {
@@ -79,21 +93,16 @@ export default {
       // });
     },
     // 用户头像点击
-    userClick() {
-      // this.$router.push({
-      //   name: "bolgdetail",
-      //   query: {
-      //     bolgId: this.value.bolgId
-      //   }
-      // });
-    },
+    userClick() {},
     dropdownClick(name) {
-     this.$router.push({
-        name: "bolg",
-        query: {
-          type: this.value.name
-        }
-      });
+      sessionStorage.setItem("type", name);
+      if (this.$router.history.current.name === "bolg") {
+        event.emit(event.HEADER_BOLG, "");
+      } else {
+        this.$router.push({
+          name: "bolg"
+        });
+      }
     },
     // 从网络获取分类
     async getTypeOnline() {
@@ -109,18 +118,4 @@ export default {
 </script>
 
 <style>
-.ivu-select-dropdown {
-  background-color: black;
-  margin: 23px 0;
-  border-radius: 0px;
-}
-.ivu-dropdown-menu {
-  min-width: 131px;
-}
-.menu-li {
-  list-style: none;
-  text-align: center;
-  font-size: 14px !important;
-  padding: 10px 0px;
-}
 </style>

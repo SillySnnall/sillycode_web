@@ -1,5 +1,8 @@
 <template>
   <Row type="flex" justify="center">
+    <Col span="24">
+      <Header/>
+    </Col>
     <Col
       span="24"
       :style="{background:'transparent url(' + headerImg + ') no-repeat center', height: '500px', backgroundSize: 'cover'}"
@@ -14,15 +17,22 @@
       </Row>
     </Col>
     <Col span="14" v-html="content" style="padding-top:40px;"></Col>
+    <Col span="24">
+      <Footer/>
+    </Col>
   </Row>
 </template>
 
 <script>
 import { get, post } from "../util";
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 
 export default {
-  name: "",
-  props: [""],
+  components: {
+    Header,
+    Footer
+  },
   data() {
     return {
       headerImg: "",
@@ -31,23 +41,15 @@ export default {
     };
   },
 
-  components: {},
-
-  computed: {},
-
   created() {
     this.getBolgOnline();
   },
-
-  beforeMount() {},
-
-  mounted() {},
 
   methods: {
     // 通过博客id获取一条博客
     async getBolgOnline() {
       let data = await post("/bolg_one", {
-        bolgId: this.$route.query.bolgId
+        bolgId: sessionStorage.getItem("bolgId")
       });
       if (data.code === 0) {
         this.headerImg = data.data.headerImg;
@@ -59,9 +61,7 @@ export default {
       // 刷新大图查看数据
       this.$previewRefresh();
     }
-  },
-
-  watch: {}
+  }
 };
 </script>
 <style>
